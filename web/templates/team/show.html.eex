@@ -1,0 +1,8 @@
+<h2>Show team</h2>
+
+<ul>
+
+</ul>
+
+<%= link "Edit", to: team_path(@conn, :edit, @team) %>
+<%= link "Back", to: team_path(@conn, :index) %>

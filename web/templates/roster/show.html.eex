@@ -1,0 +1,18 @@
+<h2>Show roster</h2>
+
+<ul>
+
+  <li>
+    <strong>Team:</strong>
+    <%= @roster.team_id %>
+  </li>
+
+  <li>
+    <strong>Player:</strong>
+    <%= @roster.player_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: roster_path(@conn, :edit, @roster) %>
+<%= link "Back", to: roster_path(@conn, :index) %>

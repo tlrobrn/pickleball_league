@@ -1,0 +1,23 @@
+<h2>Show earned points ratio</h2>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @earned_points_ratio.value %>
+  </li>
+
+  <li>
+    <strong>Player:</strong>
+    <%= @earned_points_ratio.player_id %>
+  </li>
+
+  <li>
+    <strong>Game:</strong>
+    <%= @earned_points_ratio.game_id %>
+  </li>
+
+</ul>
+
+<%= link "Edit", to: earned_points_ratio_path(@conn, :edit, @earned_points_ratio) %>
+<%= link "Back", to: earned_points_ratio_path(@conn, :index) %>

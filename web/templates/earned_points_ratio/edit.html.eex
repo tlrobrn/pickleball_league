@@ -1,0 +1,6 @@
+<h2>Edit earned points ratio</h2>
+
+<%= render "form.html", changeset: @changeset,
+                        action: earned_points_ratio_path(@conn, :update, @earned_points_ratio) %>
+
+<%= link "Back", to: earned_points_ratio_path(@conn, :index) %>

@@ -1,0 +1,30 @@
+<h2>Listing earned points ratios</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Player</th>
+      <th>Game</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for earned_points_ratio <- @earned_points_ratios do %>
+    <tr>
+      <td><%= earned_points_ratio.value %></td>
+      <td><%= earned_points_ratio.player_id %></td>
+      <td><%= earned_points_ratio.game_id %></td>
+
+      <td class="text-right">
+        <%= link "Show", to: earned_points_ratio_path(@conn, :show, earned_points_ratio), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: earned_points_ratio_path(@conn, :edit, earned_points_ratio), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: earned_points_ratio_path(@conn, :delete, earned_points_ratio), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= link "New earned points ratio", to: earned_points_ratio_path(@conn, :new) %>
