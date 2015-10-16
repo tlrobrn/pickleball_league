@@ -11,6 +11,15 @@
   <% end %>
 
   <div class="form-group">
+    <%= inputs_for f, :scores, fn score -> %>
+      <div class="form-group">
+        <%= label score, :points, "Points", class: "control-label" %>
+        <%= number_input score, :points, class: "form-control" %>
+        <%= if message = score.errors[:points] do %>
+          <span class="help-block"><%= message %></span>
+        <% end %>
+      </div>
+    <% end %>
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 <% end %>

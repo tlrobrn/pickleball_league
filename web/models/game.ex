@@ -4,10 +4,14 @@ defmodule PickleballLeague.Game do
   schema "games" do
     has_many :scores, PickleballLeague.Score
     has_many :earned_points_ratios, PickleballLeague.EarnedPointsRatio
+
+    has_many :teams, through: [:scores, :team]
+    has_many :rosters, through: [:teams, :rosters]
+    has_many :players, through: [:rosters, :players]
     timestamps
   end
 
-  @required_fields ~w()
+  @required_fields ~w(scores)
   @optional_fields ~w()
 
   @doc """

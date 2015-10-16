@@ -6,6 +6,7 @@ defmodule PickleballLeague.Team do
     has_many :scores, PickleballLeague.Score
 
     has_many :games, through: [:scores, :game]
+    has_many :players, through: [:rosters, :player]
     timestamps
   end
 

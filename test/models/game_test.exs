@@ -4,7 +4,7 @@ defmodule PickleballLeague.GameTest do
   alias PickleballLeague.Game
 
   @valid_attrs %{}
-  @invalid_attrs %{}
+  @invalid_attrs %{scores: "not scores"}
 
   test "changeset with valid attributes" do
     changeset = Game.changeset(%Game{}, @valid_attrs)
