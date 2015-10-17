@@ -19,3 +19,42 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 // import socket from "./socket"
+import {Socket} from "deps/phoenix/web/static/js/phoenix"
+let socket = new Socket("/socket", {
+  logger: (kind, msg, data) => {
+    console.log(`${kind}: ${msg}`, data);
+  },
+  params: {token: window.userToken}
+});
+
+socket.connect();
+socket.onOpen( () => console.log("connected!") );
+
+let Scoreboard = {
+  init() {
+    let gameId = $("#game").data("id");
+    if (!gameId) { return }
+
+    let gameChannel = socket.channel("games:" + gameId);
+
+    let $scores = $(".score");
+
+    $scores.click( ({currentTarget}) => {
+      let $score = $(currentTarget);
+      let score_id = $score.data("id");
+      let points = parseInt($score.text()) + 1;
+
+      gameChannel.push("point", {score_id, points});
+    });
+
+    gameChannel.on("point", ({score_id, points}) => {
+      $("#score-" + score_id).text(points);
+    });
+
+    gameChannel.join()
+      .receive("ok", () => console.log("Joined game channel"))
+      .receive("error", reason => console.log("error!", reason));
+  }
+}
+
+Scoreboard.init();

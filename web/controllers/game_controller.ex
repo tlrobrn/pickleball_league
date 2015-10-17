@@ -35,7 +35,7 @@ defmodule PickleballLeague.GameController do
   end
 
   def edit(conn, %{"id" => id}) do
-    game = Repo.get!(Game, id) |> Repo.preload(:scores)
+    game = Repo.get!(Game, id) |> Repo.preload([:scores, teams: :players])
     changeset = Game.changeset(game)
     render(conn, "edit.html", game: game, changeset: changeset)
   end

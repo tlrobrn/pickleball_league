@@ -3,6 +3,7 @@ defmodule PickleballLeague.UserSocket do
 
   ## Channels
   # channel "rooms:*", PickleballLeague.RoomChannel
+  channel "games:*", PickleballLeague.GameChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

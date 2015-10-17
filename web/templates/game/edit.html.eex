@@ -1,6 +1,22 @@
-<h2>Edit game</h2>
+<%= tag :span, id: "game", data: [id: @game.id] %>
 
-<%= render "form.html", changeset: @changeset,
-                        action: game_path(@conn, :update, @game) %>
+<div class="container scoreboard-container">
+  <div class="row" id="scoreboard">
+  <%= for score <- order(@game.scores) do %>
+    <div class="<%= column_class(@game) %> score"
+         id="score-<%= score.id %>"
+         data-id="<%= score.id %>"> <%= score.points %> </div>
+  <% end %>
+  </div>
+  <div class="row">
+  <%= for team <- order(@game.teams) do %>
+    <div class="<%= column_class(@game) %>">
+    <%= for player <- team.players do %>
+      <div class="row"><%= display_player(player) %></div>
+    <% end %>
+    </div>
+  <% end %>
+  </div>
+</div>
 
 <%= link "Back", to: game_path(@conn, :index) %>
