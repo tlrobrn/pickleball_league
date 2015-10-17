@@ -36,7 +36,9 @@ defmodule PickleballLeague.GameChannel do
   defp calculate_epr(socket) do
     game = Game
             |> Repo.get(socket.assigns.game_id)
-            |> Repo.preload([:scores, teams: :players])
+            |> Repo.preload(:players)
+
+    EarnedPointsRatio.calculate(game)
 
     {:reply, :ok, socket}
   end
