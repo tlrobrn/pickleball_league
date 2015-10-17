@@ -3,11 +3,20 @@
 <div class="container scoreboard-container">
   <div class="row" id="scoreboard">
   <%= for score <- order(@game.scores) do %>
-    <div class="<%= column_class(@game) %> score"
-         id="score-<%= score.id %>"
-         data-id="<%= score.id %>"> <%= score.points %> </div>
+    <div class="<%= column_class(@game) %>">
+      <div class="row" id="serves-<%= score.id %>">
+        <div class="serve-open"></div>
+        <div class="serve-open"></div>
+      </div>
+      <div class="row">
+        <div class="score" id="score-<%= score.id %>" data-id="<%= score.id %>">
+          <%= score.points %>
+        </div>
+      </div>
+    </div>
   <% end %>
   </div>
+
   <div class="row">
   <%= for team <- order(@game.teams) do %>
     <div class="<%= column_class(@game) %>">

@@ -6,3 +6,25 @@
 .scoreboard-container {
   text-align: center;
 }
+
+.score { cursor: default; }
+.score.game-over {cursor: not-allowed; }
+
+.serve-open {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
+  width: 10px;
+  height: 10px;
+}
+
+.serve-close {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
+  background-color: black;
+  width: 10px;
+  height: 10px;
+}
