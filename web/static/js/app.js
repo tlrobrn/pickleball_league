@@ -44,7 +44,7 @@ let Scoreboard = {
         let $score = $(score);
 
         if ($score.data("id") === score_id) { return points }
-        return parseInt($(score).text())
+        return parseInt($score.text())
       }).get();
       console.log(scores);
       let max_score = Math.max(...scores); console.log("max:",max_score);
