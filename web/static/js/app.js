@@ -63,8 +63,8 @@ let Scoreboard = {
 
       complete() {
         let scores = this.scores().map( (score) => score.points );
-        let max_score = Math.max(...scores); console.log("max:",max_score);
-        let min_score = Math.min(...scores); console.log("min:",min_score);
+        let max_score = Math.max(...scores);
+        let min_score = Math.min(...scores);
 
         return max_score >= 11 && min_score <= max_score - 2
       },

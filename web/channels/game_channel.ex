@@ -28,8 +28,6 @@ defmodule PickleballLeague.GameChannel do
   end
 
   defp update_score(message, %{"id" => score_id, "points" => points} = params, socket) do
-    require Logger
-    Logger.debug "SCORE_ID: #{score_id}, POINTS: #{points}"
     Score
     |> Repo.get(score_id)
     |> Score.changeset(%{points: points})

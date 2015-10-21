@@ -6,7 +6,7 @@ defmodule PickleballLeague.PlayerController do
   plug :scrub_params, "player" when action in [:create, :update]
 
   def index(conn, _params) do
-    players = Repo.all(Player)
+    players = Repo.all(Player) |> Repo.preload(:earned_points_ratios)
     render(conn, "index.html", players: players)
   end
 

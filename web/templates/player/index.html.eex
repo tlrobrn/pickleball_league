@@ -5,15 +5,17 @@
     <tr>
       <th>First name</th>
       <th>Last name</th>
+      <th>EPR</th>
 
       <th></th>
     </tr>
   </thead>
   <tbody>
-<%= for player <- @players do %>
+  <%= for {player, epr} <- sorted_players_with_eprs(@players) do %>
     <tr>
       <td><%= player.first_name %></td>
       <td><%= player.last_name %></td>
+      <td><%= format_epr(epr) %></td>
 
       <td class="text-right">
         <%= link "Show", to: player_path(@conn, :show, player), class: "btn btn-default btn-xs" %>
