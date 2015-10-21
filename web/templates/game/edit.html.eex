@@ -21,7 +21,11 @@
   <%= for team <- order(@game.teams) do %>
     <div class="<%= column_class(@game) %>">
     <%= for player <- team.players do %>
-      <div class="row"><%= display_player(player) %></div>
+      <div class="row">
+        <div class="player" id="player-<%= player.id %>" data-id="<%=player.id %>">
+          <%= display_player(player) %>
+        </div>
+      </div>
     <% end %>
     </div>
   <% end %>

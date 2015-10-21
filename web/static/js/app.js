@@ -39,30 +39,54 @@ let Scoreboard = {
 
     let $scores = $(".score");
 
-    let gameOver = (score_id, points) => {
-      let scores = $scores.map( (i, score) => {
+    let Game = {
+      id: gameId,
+      scores() {
+        return $scores.map( (i, score) => {
+          let $score = $(score);
+
+          return {
+            id: $score.data("id"),
+            points: parseInt($score.text())
+          }
+        }).get()
+      },
+
+      players: $(".player").map( (i, player) => {
+        let $player = $(player);
+
+        return {
+          id: $player.data("id"),
+          display: $player.text()
+        }
+      }).get(),
+
+      complete() {
+        let scores = this.scores().map( (score) => score.points );
+        let max_score = Math.max(...scores); console.log("max:",max_score);
+        let min_score = Math.min(...scores); console.log("min:",min_score);
+
+        return max_score >= 11 && min_score <= max_score - 2
+      },
+
+      increment(score) {
+        if (this.complete()) { return }
+
         let $score = $(score);
+        $score.text(parseInt($score.text()) + 1);
+      },
 
-        if ($score.data("id") === score_id) { return points }
-        return parseInt($score.text())
-      }).get();
-      console.log(scores);
-      let max_score = Math.max(...scores); console.log("max:",max_score);
-      let min_score = Math.min(...scores); console.log("min:",min_score);
-      return max_score >= 11 && min_score <= max_score - 2
-    };
+      serialize() {
+        return {
+          id: this.id,
+          scores: this.scores(),
+          players: this.players,
+        }
+      }
+    }
 
-    $scores.click( ({currentTarget}) => {
-      let $score = $(currentTarget);
-      let score_id = $score.data("id");
-      let points = parseInt($score.text()) + 1;
-
-      let message = gameOver(score_id, points)? "game_over" : "point";
-      gameChannel.push(message, {score_id, points});
-    });
-
-    gameChannel.on("point", ({score_id, points}) => {
-      $("#score-" + score_id).text(points);
+    gameChannel.on("point", ({id, points}) => {
+      $("#score-" + id).text(points);
     });
 
     gameChannel.on("game_over", ({score_id, points}) => {
@@ -73,6 +97,19 @@ let Scoreboard = {
     gameChannel.join()
       .receive("ok", () => console.log("Joined game channel"))
       .receive("error", reason => console.log("error!", reason));
+
+
+    if (Game.complete()) {
+      $scores.addClass("game-over");
+    }
+    else {
+      $scores.click( ({currentTarget}) => {
+        Game.increment(currentTarget);
+        let message = Game.complete()? "game_over" : "point";
+        gameChannel.push(message, Game.serialize());
+      })
+    }
+
   }
 }
 

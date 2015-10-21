@@ -4,14 +4,15 @@ defmodule PickleballLeague.EarnedPointsRatio do
   alias PickleballLeague.Repo
 
   schema "earned_points_ratios" do
-    field :value, :float
+    field :earned_points, :integer
+    field :total_points, :integer
     belongs_to :player, PickleballLeague.Player
     belongs_to :game, Game
 
     timestamps
   end
 
-  @required_fields ~w(value)
+  @required_fields ~w(earned_points total_points)
   @optional_fields ~w(game_id player_id)
 
   @doc """
@@ -32,31 +33,26 @@ defmodule PickleballLeague.EarnedPointsRatio do
   end
 
   defp epr_query(game) do
-    player_ids = Enum.map(game.players, &(&1.id)) |> Enum.join(",")
     query = """
     WITH games_played AS (
       SELECT G.id, R.team_id, R.player_id
       FROM games G
       JOIN scores S ON G.id = S.game_id
       JOIN rosters R ON S.team_id = R.team_id
-      WHERE R.player_id IN (#{player_ids})
-    ),
-    player_scores AS (
-      SELECT
-        GP.player_id,
-        GP.id,
-        SUM(CASE WHEN S.team_id = GP.team_id THEN S.points ELSE 0 END) AS earned_pts,
-        SUM(S.points) AS total_pts
-      FROM scores S
-      JOIN games_played GP ON S.game_id = GP.id
-      GROUP BY 1, 2
+      WHERE G.id = $1
     )
-    SELECT player_id, SUM(earned_pts) / SUM(total_pts)::float AS value
-    FROM player_scores PS
-    GROUP BY 1
+  
+    SELECT
+      GP.player_id,
+      GP.id AS game_id,
+      SUM(CASE WHEN S.team_id = GP.team_id THEN S.points ELSE 0 END) AS earned_points,
+      SUM(S.points) AS total_points
+    FROM scores S
+    JOIN games_played GP ON S.game_id = GP.id
+    GROUP BY 1, 2
     """
 
-    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
-    Enum.map(rows, fn row -> Enum.zip(columns, row) |> Enum.into(%{"game_id" => game.id}) end)
+    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [game.id])
+    Enum.map(rows, fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
   end
 end

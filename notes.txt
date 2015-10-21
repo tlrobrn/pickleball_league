@@ -1,0 +1,11 @@
+change earned_points_ratios schema to be:
+
+earned_points, integer
+total_points, integer
+game_id
+player_id
+
+
+would only be for *that* game
+
+makes for easier combination of players eprs and still allows you to calculate totals easily per player

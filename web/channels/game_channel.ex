@@ -8,18 +8,28 @@ defmodule PickleballLeague.GameChannel do
     {:ok, assign(socket, :game_id, game_id) }
   end
 
-  def handle_in("point", %{"score_id" => score_id, "points" => points} = params, socket) do
-    update_score("point", params, socket)
+  def handle_in("point", %{"scores" => scores}, socket) do
+    update_scores("point", scores, socket)
   end
 
-  def handle_in("game_over", %{"score_id" => score_id, "points" => points} = params, socket) do
-    case update_score("game_over", params, socket) do
-      {:reply, :ok, socket} -> calculate_epr(socket)
+  def handle_in("game_over", %{"id" => game_id, "scores" => scores}, socket) do
+    case update_scores("game_over", scores, socket) do
+      {:reply, :ok, socket} -> calculate_epr(game_id, socket)
       error -> error
     end
   end
 
-  defp update_score(message, %{"score_id" => score_id, "points" => points} = params, socket) do
+  defp update_scores(message, [score | []], socket) do
+    update_score(message, score, socket)
+  end
+  defp update_scores(message, [score | scores], socket) do
+    update_score(message, score, socket)
+    update_scores(message, scores, socket)
+  end
+
+  defp update_score(message, %{"id" => score_id, "points" => points} = params, socket) do
+    require Logger
+    Logger.debug "SCORE_ID: #{score_id}, POINTS: #{points}"
     Score
     |> Repo.get(score_id)
     |> Score.changeset(%{points: points})
@@ -33,12 +43,8 @@ defmodule PickleballLeague.GameChannel do
     end
   end
 
-  defp calculate_epr(socket) do
-    game = Game
-            |> Repo.get(socket.assigns.game_id)
-            |> Repo.preload(:players)
-
-    EarnedPointsRatio.calculate(game)
+  defp calculate_epr(game_id, socket) do
+    EarnedPointsRatio.calculate(Repo.get(Game, game_id))
 
     {:reply, :ok, socket}
   end
