@@ -21,9 +21,10 @@ defmodule PickleballLeague.GameController do
   end
 
   def create(conn, %{"Home-Team" => home_players, "Away-Team" => away_players}) do
+    teams = [Enum.map(home_players, &String.to_integer/1), Enum.map(away_players, &String.to_integer/1)]
     case Repo.insert(Game.changeset(%Game{}, %{})) do
       {:ok, game} ->
-        setup_records_for_game([home_players, away_players], game.id)
+        setup_records_for_game(teams, game.id)
         redirect(conn, to: game_path(conn, :index))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
