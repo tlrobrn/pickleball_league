@@ -8,7 +8,7 @@ defmodule PickleballLeague.Roster do
     timestamps
   end
 
-  @required_fields ~w()
+  @required_fields ~w(team_id player_id)
   @optional_fields ~w()
 
   @doc """

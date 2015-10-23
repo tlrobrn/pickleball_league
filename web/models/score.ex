@@ -9,7 +9,7 @@ defmodule PickleballLeague.Score do
     timestamps
   end
 
-  @required_fields ~w(points)
+  @required_fields ~w(points game_id team_id)
   @optional_fields ~w()
 
   @doc """

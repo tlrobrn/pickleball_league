@@ -11,7 +11,7 @@ defmodule PickleballLeague.Game do
     timestamps
   end
 
-  @required_fields ~w(scores)
+  @required_fields ~w()
   @optional_fields ~w()
 
   @doc """

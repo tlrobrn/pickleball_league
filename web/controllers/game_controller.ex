@@ -3,6 +3,9 @@ defmodule PickleballLeague.GameController do
 
   alias PickleballLeague.Game
   alias PickleballLeague.Score
+  alias PickleballLeague.Player
+  alias PickleballLeague.Roster
+  alias PickleballLeague.Team
 
   plug :scrub_params, "game" when action in [:create, :update]
 
@@ -12,21 +15,81 @@ defmodule PickleballLeague.GameController do
   end
 
   def new(conn, _params) do
-    changeset = Game.changeset(%Game{scores: [%Score{}, %Score{}]})
-    render(conn, "new.html", changeset: changeset)
+    changeset = Game.changeset(%Game{})
+    players = Repo.all(Player)
+    render(conn, "new.html", changeset: changeset, players: players)
   end
 
-  def create(conn, %{"game" => game_params}) do
-    changeset = Game.changeset(%Game{}, game_params)
-
-    case Repo.insert(changeset) do
-      {:ok, _game} ->
-        conn
-        |> put_flash(:info, "Game created successfully.")
-        |> redirect(to: game_path(conn, :index))
+  def create(conn, %{"teams" => teams}) do
+    case Repo.insert(Game.changeset(%Game{}, %{})) do
+      {:ok, game} ->
+        setup_records_for_game(teams, game.id)
+        redirect(conn, to: game_path(conn, :index))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
+  end
+
+  def setup_records_for_game(teams, game_id) do
+    find_or_create(teams)
+    |> create_rosters
+    |> create_scores(game_id)
+  end
+
+  defp find_or_create([player_ids | []]) do
+    [find_or_create_team_for(player_ids)]
+  end
+
+  defp find_or_create([player_ids | other_teams]) do
+    [find_or_create_team_for(player_ids) | find_or_create(other_teams)]
+  end
+
+  defp find_or_create_team_for(player_ids) do
+    query = """
+    SELECT *
+    FROM rosters
+    WHERE player_id IN (#{Enum.join(player_ids, ",")})
+    """
+    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
+
+    rows
+    |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
+    |> Enum.reduce(%{}, fn (row, map) ->
+      Map.update(map, row["team_id"], [row["player_id"]], &([row["player_id"] | &1]))
+    end)
+    |> Enum.find(fn {_team_id, players} -> Enum.sort(players) == Enum.sort(player_ids) end)
+    |> case do
+      {team_id, _players} -> {:previous, team_id, player_ids}
+      nil -> {:new, create_and_get_team(), player_ids}
+    end
+  end
+
+  defp create_and_get_team do
+    case Repo.insert(Team.changeset(%Team{}, %{})) do
+      {:ok, team} -> team.id
+      {:error, changeset} -> changeset
+    end
+  end
+
+  defp create_rosters(teams) do
+    Enum.map(teams, &create_roster/1)
+  end
+
+  defp create_roster({:previous, team_id, _player_ids}), do: team_id
+  defp create_roster({:new, team_id, player_ids}) do
+    player_ids
+    |> Enum.each(fn player_id ->
+      Repo.insert(Roster.changeset(%Roster{}, %{team_id: team_id, player_id: player_id}))
+    end)
+
+    team_id
+  end
+
+  def create_scores(teams, game_id) do
+    teams
+    |> Enum.each(fn team_id ->
+      Repo.insert(Score.changeset(%Score{}, %{team_id: team_id, game_id: game_id, points: 0}))
+    end)
   end
 
   def show(conn, %{"id" => id}) do
