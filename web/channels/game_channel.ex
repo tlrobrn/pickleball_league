@@ -19,6 +19,11 @@ defmodule PickleballLeague.GameChannel do
     end
   end
 
+  def handle_in("advance_serve", %{"serve" => serve}, socket) do
+    broadcast!(socket, "advance_serve", %{"serve" => serve})
+    {:reply, :ok, socket}
+  end
+
   defp update_scores(message, [score | []], socket) do
     update_score(message, score, socket)
   end

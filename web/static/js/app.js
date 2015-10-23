@@ -52,6 +52,8 @@ let Scoreboard = {
         }).get()
       },
 
+      serve: [0, 1],
+
       players: $(".player").map( (i, player) => {
         let $player = $(player);
 
@@ -70,10 +72,30 @@ let Scoreboard = {
       },
 
       increment(score) {
-        if (this.complete()) { return }
-
+        let server = this.scores()[this.serve[0]];
         let $score = $(score);
-        $score.text(parseInt($score.text()) + 1);
+
+        if (server.id === $score.data("id")) {
+          $score.text(parseInt($score.text()) + 1);
+          return true;
+        }
+        else {
+          this.advanceServe();
+          return false;
+        }
+      },
+
+      advanceServe() {
+        let numTeams = this.scores().length;
+
+        let currentServe = this.serve[1];
+        if (currentServe < 1) {
+          this.serve = [this.serve[0], 1];
+        }
+        else {
+          let currentTeam = this.serve[0];
+          this.serve = [(this.serve[0] + 1) % numTeams, 0];
+        }
       },
 
       serialize() {
@@ -81,7 +103,21 @@ let Scoreboard = {
           id: this.id,
           scores: this.scores(),
           players: this.players,
+          serve: this.serve
         }
+      }
+    }
+
+    let showServe = function(serve) {
+      let scoreIdForServe = Game.scores()[serve[0]].id;
+      let serveCounter = serve[1];
+
+      $(".serve-marker").removeClass("serve-close");
+      if (serveCounter === 1) {
+        $("#serves-" + scoreIdForServe).children().addClass("serve-close");
+      }
+      else {
+        $("#serves-" + scoreIdForServe + " :first-child").addClass("serve-close");
       }
     }
 
@@ -94,6 +130,11 @@ let Scoreboard = {
       $scores.off("click").addClass("game-over")
     });
 
+    gameChannel.on("advance_serve", ({serve}) => {
+      Game.serve = serve;
+      showServe(serve);
+    });
+
     gameChannel.join()
       .receive("ok", () => console.log("Joined game channel"))
       .receive("error", reason => console.log("error!", reason));
@@ -104,15 +145,18 @@ let Scoreboard = {
     }
     else {
       $scores.click( ({currentTarget}) => {
-        Game.increment(currentTarget);
-        let message = Game.complete()? "game_over" : "point";
+        var message = "advance_serve";
+
+        if (Game.increment(currentTarget)) {
+          message = Game.complete()? "game_over" : "point";
+        }
         gameChannel.push(message, Game.serialize());
       })
-    }
 
+      showServe(Game.serve);
+    }
   }
 }
 
 Scoreboard.init();
-
 $(".chosen-select").chosen();
