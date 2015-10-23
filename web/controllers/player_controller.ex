@@ -7,7 +7,48 @@ defmodule PickleballLeague.PlayerController do
 
   def index(conn, _params) do
     players = Repo.all(Player) |> Repo.preload(:earned_points_ratios)
-    render(conn, "index.html", players: players)
+    render(conn, "index.html", players: players, opponent_eprs: opponent_eprs)
+  end
+
+  def opponent_eprs do
+    opponents_played
+    |> Enum.map(&calculate_opponent_epr/1)
+    |> Enum.into(%{})
+  end
+
+  defp opponents_played do
+    query = """
+    select distinct P.id, O.player_id as opponent_id
+    from players P
+    join rosters R on P.id = R.player_id
+    join teams T on T.id = R.team_id
+    join scores S on S.team_id = T.id
+    join scores OS on OS.game_id = S.game_id and OS.team_id <> S.team_id
+    join teams OT on OT.id = OS.team_id
+    join rosters O on O.team_id = OT.id
+    """
+    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
+
+    rows
+    |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
+    |> Enum.reduce(%{}, fn (row, map) ->
+      Map.update(map, row["id"], [row["opponent_id"]], &([row["opponent_id"] | &1]))
+    end)
+  end
+
+  defp calculate_opponent_epr({player_id, opponent_ids}) do
+    query = """
+    select sum(earned_points)::float / sum(total_points) as epr
+    from earned_points_ratios
+    where player_id IN (#{Enum.join(opponent_ids, ",")})
+    """
+    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
+
+    epr = rows
+    |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
+    |> Enum.reduce(0, fn (%{"epr" => epr}, acc) -> epr + acc end)
+
+    {player_id, epr}
   end
 
   def new(conn, _params) do
