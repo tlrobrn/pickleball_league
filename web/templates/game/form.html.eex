@@ -11,14 +11,12 @@
   <% end %>
 
   <div class="form-group">
-    <%= inputs_for f, :scores, fn score -> %>
-      <div class="form-group">
-        <%= label score, :points, "Points", class: "control-label" %>
-        <%= number_input score, :points, class: "form-control" %>
-        <%= if message = score.errors[:points] do %>
-          <span class="help-block"><%= message %></span>
+    <%= for team <- ["Home-Team", "Away-Team"] do %>
+      <select name="<%= team %>[]" class="chosen-select" data-placeholder="<%= team %>" multiple>
+        <%= for player <- @players do %>
+          <option value="<%= player.id %>"><%= player.first_name %> <%= player.last_name %></option>
         <% end %>
-      </div>
+      </select>
     <% end %>
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>

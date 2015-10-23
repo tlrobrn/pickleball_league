@@ -114,3 +114,5 @@ let Scoreboard = {
 }
 
 Scoreboard.init();
+
+$(".chosen-select").chosen();

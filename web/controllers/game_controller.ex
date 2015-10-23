@@ -7,7 +7,7 @@ defmodule PickleballLeague.GameController do
   alias PickleballLeague.Roster
   alias PickleballLeague.Team
 
-  plug :scrub_params, "game" when action in [:create, :update]
+  plug :scrub_params, "game" when action in [:update]
 
   def index(conn, _params) do
     games = Repo.all(Game) |> Repo.preload([:scores, teams: :players])
@@ -20,10 +20,10 @@ defmodule PickleballLeague.GameController do
     render(conn, "new.html", changeset: changeset, players: players)
   end
 
-  def create(conn, %{"teams" => teams}) do
+  def create(conn, %{"Home-Team" => home_players, "Away-Team" => away_players}) do
     case Repo.insert(Game.changeset(%Game{}, %{})) do
       {:ok, game} ->
-        setup_records_for_game(teams, game.id)
+        setup_records_for_game([home_players, away_players], game.id)
         redirect(conn, to: game_path(conn, :index))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
