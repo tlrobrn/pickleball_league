@@ -20,20 +20,19 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 
 // import socket from "./socket"
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
-let socket = new Socket("/socket", {
-  logger: (kind, msg, data) => {
-    console.log(`${kind}: ${msg}`, data);
-  },
-  params: {token: window.userToken}
-});
-
-socket.connect();
-socket.onOpen( () => console.log("connected!") );
-
 let Scoreboard = {
   init() {
     let gameId = $("#game").data("id");
     if (!gameId) { return }
+
+    let socket = new Socket("/socket", {
+      logger: (kind, msg, data) => {
+        console.log(`${kind}: ${msg}`, data);
+      },
+      params: {token: window.userToken}
+    });
+    socket.connect();
+    socket.onOpen( () => console.log("connected!") );
 
     let gameChannel = socket.channel("games:" + gameId);
 
