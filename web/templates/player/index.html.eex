@@ -17,8 +17,8 @@
     <tr>
       <td><%= player.first_name %></td>
       <td><%= player.last_name %></td>
-      <td><%= format_epr(epr) %></td>
-      <td><%= format_epr(@opponent_eprs[player.id]) %></td>
+      <td data-value="<%=epr%>"><%= format_epr(epr) %></td>
+      <td data-value="<%=@opponent_eprs[player.id]%>"><%= format_epr(@opponent_eprs[player.id]) %></td>
       <td><%= length(player.earned_points_ratios) %></td>
 
       <td class="text-right">
