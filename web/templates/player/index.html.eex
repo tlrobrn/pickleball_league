@@ -3,8 +3,8 @@
 <table class="table">
   <thead>
     <tr>
-      <th>First name</th>
-      <th>Last name</th>
+      <th></th>
+      <th>Player</th>
       <th>EPR</th>
       <th>Opponent EPR</th>
       <th>Games Played</th>
@@ -13,10 +13,10 @@
     </tr>
   </thead>
   <tbody>
-    <%= for {player, epr} <- sorted_players_with_eprs(@players, @opponent_eprs) do %>
+    <%= for {{player, epr}, index} <- Enum.with_index(sorted_players_with_eprs(@players, @opponent_eprs)) do %>
     <tr>
-      <td><%= player.first_name %></td>
-      <td><%= player.last_name %></td>
+      <td><%= index + 1 %>.</td>
+      <td><%= player.first_name %> <%= player.last_name %></td>
       <td data-value="<%=epr%>"><%= format_epr(epr) %></td>
       <td data-value="<%=@opponent_eprs[player.id]%>"><%= format_epr(@opponent_eprs[player.id]) %></td>
       <td><%= length(player.earned_points_ratios) %></td>
