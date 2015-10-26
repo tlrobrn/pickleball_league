@@ -24,6 +24,7 @@ defmodule PickleballLeague.Router do
     resources "/games", GameController
     resources "/scores", ScoreController
     resources "/earned_points_ratios", EarnedPointsRatioController
+    resources "/groups", GroupController
   end
 
   # Other scopes may use custom stacks.

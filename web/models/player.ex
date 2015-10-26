@@ -7,10 +7,12 @@ defmodule PickleballLeague.Player do
 
     has_many :earned_points_ratios, PickleballLeague.EarnedPointsRatio
     has_many :rosters, PickleballLeague.Roster
+    has_many :player_groups, PickleballLeague.PlayerGroup
 
     has_many :teams, through: [:rosters, :team]
     has_many :scores, through: [:teams, :score]
     has_many :games, through: [:teams, :game]
+    has_many :groups, through: [:player_groups, :group]
     timestamps
   end
 
