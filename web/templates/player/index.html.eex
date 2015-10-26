@@ -14,7 +14,7 @@
   </thead>
   <tbody>
     <%= for {{player, epr}, index} <- Enum.with_index(sorted_players_with_eprs(@players, @opponent_eprs)) do %>
-    <tr>
+    <tr class="stripe-<%= rem(index, 2) %>">
       <td><%= index + 1 %>.</td>
       <td><%= player.first_name %> <%= player.last_name %></td>
       <td data-value="<%=epr%>"><%= format_epr(epr) %></td>
