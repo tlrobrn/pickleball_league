@@ -1,11 +1,6 @@
-change earned_points_ratios schema to be:
+Add logic to schedule games for a group of players.
+(needs to be group of 4 or 5).
 
-earned_points, integer
-total_points, integer
-game_id
-player_id
+Display rankings per group:
+  Refactor current players/index template to have a player_table partial and use that
 
-
-would only be for *that* game
-
-makes for easier combination of players eprs and still allows you to calculate totals easily per player
