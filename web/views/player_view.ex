@@ -6,7 +6,7 @@ defmodule PickleballLeague.PlayerView do
   def sorted_players_with_eprs(players, opponent_eprs) do
     players
     |> Enum.sort_by(&length(&1.earned_points_ratios), &>=/2)
-    |> Enum.sort_by(&(opponent_eprs[&1]), &>=/2)
+    |> Enum.sort_by(&(opponent_eprs[&1.id]), &>=/2)
     |> Enum.map(&({&1, calculate_epr(&1)}))
     |> Enum.sort_by(fn {_p, epr} -> epr end, &>=/2)
   end
