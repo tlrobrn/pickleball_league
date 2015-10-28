@@ -11,6 +11,14 @@ defmodule PickleballLeague.PlayerView do
     |> Enum.sort_by(fn {_p, epr} -> epr end, &>=/2)
   end
 
+  def display_player(player, true) do
+    first_initial = String.first(player.first_name)
+    "#{first_initial}. #{player.last_name}"
+  end
+  def display_player(player, false) do
+    "#{player.first_name} #{player.last_name}"
+  end
+
   def format_epr(@no_games_value), do: "-----"
   def format_epr(nil), do: "-----"
   def format_epr(epr), do: Float.to_string(epr, decimals: 3)
