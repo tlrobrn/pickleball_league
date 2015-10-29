@@ -1,6 +1,7 @@
-Add logic to schedule games for a group of players.
-(needs to be group of 4 or 5).
+need to scope rankings to group only?
 
-Display rankings per group:
-  Refactor current players/index template to have a player_table partial and use that
+for leaders group, should EPR include other games? maybe no
+then we'd need to scope group rankings by group opponents.
+
+overall player rankings used to seed elimination tournament do not need to be scoped
 
