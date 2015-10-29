@@ -44,9 +44,13 @@ defmodule PickleballLeague.PlayerController do
     """
     {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
 
-    epr = rows
-    |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
-    |> Enum.reduce(0, fn (%{"epr" => epr}, acc) -> epr + acc end)
+    epr = case rows do
+      [[nil]] -> nil
+      results ->
+        results
+        |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
+        |> Enum.reduce(0, fn (%{"epr" => epr}, acc) -> epr + acc end)
+    end
 
     {player_id, epr}
   end

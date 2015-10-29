@@ -4,6 +4,7 @@ defmodule PickleballLeague.GroupController do
   alias PickleballLeague.Group
   alias PickleballLeague.Player
   alias PickleballLeague.PlayerGroup
+  alias PickleballLeague.GameController
 
   plug :scrub_params, "group" when action in [:create, :update]
 
@@ -80,6 +81,26 @@ defmodule PickleballLeague.GroupController do
   end
   defp determine_groups(players, 16) do
     players |> Enum.chunk(4)
+  end
+
+  def generate_games(conn, %{"id" => id}) do
+    group = Group |> Repo.get!(id) |> Repo.preload(:players)
+    generate_games_for(conn, group.players)
+  end
+
+  defp generate_games_for(conn, players) when length(players) == 4 do
+    [a, b, c, d] = players |> Enum.map(&Integer.to_string(&1.id))
+    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,d]})
+    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d]})
+    GameController.create(conn, %{"Home-Team" => [a,c], "Away-Team" => [b,d]})
+  end
+  defp generate_games_for(conn, players) when length(players) == 5 do
+    [a, b, c, d, e] = players |> Enum.map(&Integer.to_string(&1.id))
+    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,e]})
+    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d]})
+    GameController.create(conn, %{"Home-Team" => [c,d], "Away-Team" => [b,e]})
+    GameController.create(conn, %{"Home-Team" => [d,e], "Away-Team" => [a,c]})
+    GameController.create(conn, %{"Home-Team" => [e,a], "Away-Team" => [b,d]})
   end
 
   def show(conn, %{"id" => id}) do
