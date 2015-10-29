@@ -8,7 +8,7 @@ defmodule PickleballLeague.PlayerGroup do
     timestamps
   end
 
-  @required_fields ~w()
+  @required_fields ~w(player_id group_id)
   @optional_fields ~w()
 
   @doc """
