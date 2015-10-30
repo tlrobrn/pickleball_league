@@ -1,6 +1,7 @@
 TODO:
 
-1. Allow to manually create groups similar to games
-2. Provide actual button to create random groups
-3. Provide actual button to generate games for a specific group
-4. Randomly assign and seed pairs for tournament
+x1. Allow to manually create groups similar to games
+2. Only count games played in group when listing games played
+3. Provide actual button to create random groups
+4. Provide actual button to generate games for a specific group
+5. Randomly assign and seed pairs for tournament

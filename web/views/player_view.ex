@@ -26,6 +26,14 @@ defmodule PickleballLeague.PlayerView do
     "#{player.first_name} #{player.last_name}"
   end
 
+  def games_played(player, false) do
+    length(player.earned_points_ratios)
+  end
+  def games_played(player, group_id) do
+    player.earned_points_ratios
+    |> Enum.count(&(&1.game.group_id == group_id))
+  end
+
   def format_epr(@no_games_value), do: "-----"
   def format_epr(nil), do: "-----"
   def format_epr(epr), do: Float.to_string(epr, decimals: 3)

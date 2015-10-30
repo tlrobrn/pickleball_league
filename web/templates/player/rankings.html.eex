@@ -22,7 +22,7 @@
     <% else %>
       <td data-value="<%=@opponent_eprs[player.id]%>"><%= format_epr(@opponent_eprs[player.id]) %></td>
     <% end %>
-      <td><%= length(player.earned_points_ratios) %></td>
+      <td><%= games_played(player, @group_id) %></td>
     <%= if @modifyable do %>
       <td class="text-right">
         <%= link "Show", to: player_path(@conn, :show, player), class: "btn btn-default btn-xs" %>
