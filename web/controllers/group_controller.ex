@@ -6,8 +6,6 @@ defmodule PickleballLeague.GroupController do
   alias PickleballLeague.PlayerGroup
   alias PickleballLeague.GameController
 
-  plug :scrub_params, "group" when action in [:create, :update]
-
   def index(conn, _params) do
     groups = Repo.all(Group)
     render(conn, "index.html", groups: groups)
@@ -15,7 +13,16 @@ defmodule PickleballLeague.GroupController do
 
   def new(conn, _params) do
     changeset = Group.changeset(%Group{})
-    render(conn, "new.html", changeset: changeset)
+    players = Repo.all(Player)
+    render(conn, "new.html", changeset: changeset, players: players)
+  end
+
+  def create(conn, %{"group" => group_params, "players" => players}) do
+    Group.changeset(%Group{}, group_params)
+    |> Repo.insert
+    |> associate(players |> Enum.map(&Repo.get!(Player, &1)))
+
+    redirect(conn, to: group_path(conn, :index))
   end
 
   def create(conn, %{"group" => group_params}) do
