@@ -2,6 +2,7 @@ defmodule PickleballLeague.Game do
   use PickleballLeague.Web, :model
 
   schema "games" do
+    belongs_to :group, PickleballLeague.Group
     has_many :scores, PickleballLeague.Score
     has_many :earned_points_ratios, PickleballLeague.EarnedPointsRatio
 
@@ -12,7 +13,7 @@ defmodule PickleballLeague.Game do
   end
 
   @required_fields ~w()
-  @optional_fields ~w()
+  @optional_fields ~w(group_id)
 
   @doc """
   Creates a changeset based on the `model` and `params`.

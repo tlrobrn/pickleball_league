@@ -2,6 +2,7 @@
 
 <%= render "rankings.html", players: @players,
                             opponent_eprs: @opponent_eprs,
+                            group_id: false,
                             compact: false,
                             modifyable: true,
                             conn: @conn %>

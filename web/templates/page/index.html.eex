@@ -10,6 +10,7 @@
                 "rankings.html",
                 players: group.players,
                 opponent_eprs: @opponent_eprs,
+                group_id: group.id,
                 compact: true,
                 modifyable: false) %>
   </div>

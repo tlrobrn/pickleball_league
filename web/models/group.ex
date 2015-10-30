@@ -4,6 +4,7 @@ defmodule PickleballLeague.Group do
   schema "groups" do
     field :name, :string
 
+    has_many :games, PickleballLeague.Game
     has_many :player_groups, PickleballLeague.PlayerGroup
 
     has_many :players, through: [:player_groups, :player]

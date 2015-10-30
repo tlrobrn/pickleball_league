@@ -3,10 +3,17 @@ defmodule PickleballLeague.PlayerView do
 
   @no_games_value -1.0
 
-  def sorted_players_with_eprs(players, opponent_eprs) do
+  def sorted_players_with_eprs(players, opponent_eprs, false) do
     players
     |> Enum.sort_by(&length(&1.earned_points_ratios), &>=/2)
     |> Enum.sort_by(&(opponent_eprs[&1.id]), &>=/2)
+    |> Enum.map(&({&1, calculate_epr(&1)}))
+    |> Enum.sort_by(fn {_p, epr} -> epr end, &>=/2)
+  end
+  def sorted_players_with_eprs(players, opponent_eprs, group_id) do
+    players
+    |> Enum.sort_by(&length(&1.earned_points_ratios), &>=/2)
+    |> Enum.sort_by(&(opponent_eprs[&1.id][group_id]), &>=/2)
     |> Enum.map(&({&1, calculate_epr(&1)}))
     |> Enum.sort_by(fn {_p, epr} -> epr end, &>=/2)
   end

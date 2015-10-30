@@ -85,22 +85,22 @@ defmodule PickleballLeague.GroupController do
 
   def generate_games(conn, %{"id" => id}) do
     group = Group |> Repo.get!(id) |> Repo.preload(:players)
-    generate_games_for(conn, group.players)
+    generate_games_for(conn, group.id, group.players)
   end
 
-  defp generate_games_for(conn, players) when length(players) == 4 do
+  defp generate_games_for(conn, group_id, players) when length(players) == 4 do
     [a, b, c, d] = players |> Enum.map(&Integer.to_string(&1.id))
-    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,d]})
-    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d]})
-    GameController.create(conn, %{"Home-Team" => [a,c], "Away-Team" => [b,d]})
+    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,d], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [a,c], "Away-Team" => [b,d], "group_id" => group_id})
   end
-  defp generate_games_for(conn, players) when length(players) == 5 do
+  defp generate_games_for(conn, group_id, players) when length(players) == 5 do
     [a, b, c, d, e] = players |> Enum.map(&Integer.to_string(&1.id))
-    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,e]})
-    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d]})
-    GameController.create(conn, %{"Home-Team" => [c,d], "Away-Team" => [b,e]})
-    GameController.create(conn, %{"Home-Team" => [d,e], "Away-Team" => [a,c]})
-    GameController.create(conn, %{"Home-Team" => [e,a], "Away-Team" => [b,d]})
+    GameController.create(conn, %{"Home-Team" => [a,b], "Away-Team" => [c,e], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [b,c], "Away-Team" => [a,d], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [c,d], "Away-Team" => [b,e], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [d,e], "Away-Team" => [a,c], "group_id" => group_id})
+    GameController.create(conn, %{"Home-Team" => [e,a], "Away-Team" => [b,d], "group_id" => group_id})
   end
 
   def show(conn, %{"id" => id}) do

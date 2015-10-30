@@ -16,6 +16,12 @@ defmodule PickleballLeague.PlayerController do
     |> Enum.into(%{})
   end
 
+  def opponent_eprs_by_group do
+    opponents_played
+    |> Enum.map(&calculate_opponent_epr_by_group/1)
+    |> Enum.into(%{})
+  end
+
   defp opponents_played do
     query = """
     select distinct P.id, O.player_id as opponent_id
@@ -34,6 +40,27 @@ defmodule PickleballLeague.PlayerController do
     |> Enum.reduce(%{}, fn (row, map) ->
       Map.update(map, row["id"], [row["opponent_id"]], &([row["opponent_id"] | &1]))
     end)
+  end
+
+  defp calculate_opponent_epr_by_group({player_id, opponent_ids}) do
+    query = """
+    select G.group_id, sum(E.earned_points)::float / sum(E.total_points) as epr
+    from earned_points_ratios E
+    join games G on E.game_id = G.id
+    where player_id IN (#{Enum.join(opponent_ids, ",")})
+    group by G.group_id
+    """
+    {:ok, %{columns: columns, rows: rows}} = Ecto.Adapters.SQL.query(Repo, query, [])
+
+    group_eprs = case rows do
+      [[nil]] -> %{}
+      results ->
+        results
+        |> Enum.map(fn row -> Enum.zip(columns, row) |> Enum.into(%{}) end)
+        |> Enum.reduce(%{}, fn (%{"group_id" => group_id, "epr" => epr}, acc) -> Map.put(acc, group_id, epr) end)
+    end
+
+    {player_id, group_eprs}
   end
 
   defp calculate_opponent_epr({player_id, opponent_ids}) do

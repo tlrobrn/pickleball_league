@@ -12,12 +12,16 @@
     </tr>
   </thead>
   <tbody>
-    <%= for {{player, epr}, index} <- Enum.with_index(sorted_players_with_eprs(@players, @opponent_eprs)) do %>
+    <%= for {{player, epr}, index} <- Enum.with_index(sorted_players_with_eprs(@players, @opponent_eprs, @group_id)) do %>
     <tr class="stripe-<%= rem(index, 2) %>">
       <td><%= index + 1 %>.</td>
       <td><%= display_player(player, @compact) %></td>
       <td data-value="<%=epr%>"><%= format_epr(epr) %></td>
+    <%= if @group_id do %>
+      <td data-value="<%=@opponent_eprs[player.id][@group_id]%>"><%= format_epr(@opponent_eprs[player.id][@group_id]) %></td>
+    <% else %>
       <td data-value="<%=@opponent_eprs[player.id]%>"><%= format_epr(@opponent_eprs[player.id]) %></td>
+    <% end %>
       <td><%= length(player.earned_points_ratios) %></td>
     <%= if @modifyable do %>
       <td class="text-right">

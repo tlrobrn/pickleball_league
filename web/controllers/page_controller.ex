@@ -4,7 +4,7 @@ defmodule PickleballLeague.PageController do
   alias PickleballLeague.PlayerController
 
   def index(conn, _params) do
-    opponent_eprs = PlayerController.opponent_eprs
+    opponent_eprs = PlayerController.opponent_eprs_by_group
     groups = Group
     |> Repo.all
     |> Repo.preload(players: :earned_points_ratios)
